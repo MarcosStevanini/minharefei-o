@@ -1,0 +1,11 @@
+{
+  "produtos": [
+    {
+      "arroz": "Arroz",
+      "feijao": "Feijão",
+      "lazanha": "Lazanha",
+      "carneBoi": "Bife de boi",
+      "carneFrango": "Frango Grelhado"
+    }
+  ]
+}
