@@ -1,26 +1,47 @@
-import { useState } from "react";
 import "./ContentFood.scss";
 
 export default function ContentFood() {
   const testeData = new Date();
 
-  const [produto, setProduto] = useState(
-    document.querySelectorAll("[type=checkbox]:checked")
-  );
-
   function EnviarPedido() {
     var checado = document.querySelectorAll("[type=checkbox]:checked");
+    var pagamentos = document.querySelectorAll("[name=pagamentos]:checked");
+    var troco = document.querySelectorAll("[name=troco]:checked");
+    var totalTroco = document.getElementById("valorTroco").value;
+
+    var pagValues = [];
     var values = [];
+    var trocoValue = [];
+
+    for (var k = 0; k < troco.length; k++) {
+      trocoValue.push(troco[k].value);
+    }
 
     for (var i = 0; i < checado.length; i++) {
       values.push(checado[i].value);
     }
+    for (var j = 0; j < pagamentos.length; j++) {
+      pagValues.push(pagamentos[j].value);
+    }
 
-    if (values.length > 2) {
-      console.log(values);
-      window.location.href = `https://wa.me/+5522988545081?text=Olá, eu gostaria de pedir uma refeição com: *${values}*`;
-    } else {
+    if (values.length > 2 && pagValues.length > 0) {
+      // console.log(values);
+      // console.log(pagValues);
+      // console.log(fim);
+      var fim =
+        trocoValue == "sim"
+          ? " Com troco para: " + totalTroco + " reais"
+          : trocoValue == "nao"
+          ? " Sem troco"
+          : ".";
+
+      window.location.href =
+        `https://wa.me/+5522988545081?text=Olá, eu gostaria de pedir uma refeição com: *${values}*. Com a forma de pagamento em: ${pagValues}` +
+        `${fim}`;
+    } else if (values.length <= 2) {
       alert("Você precisa selecionar pelo menos 2 tipos de alimentos");
+    } else {
+      alert("Você precisa selecionar a forma de pagamento");
     }
   }
 
@@ -182,23 +203,96 @@ export default function ContentFood() {
                 <hr />
               </div>
               <div className="contentPay">
-                <div className="cart">
+                <div className="cart mb-2 mt-1">
                   <h6>Crédito</h6>
-                  <p>Visa, MasterCard, Maestro, Americanas, Elo</p>
+                  <div className="d-flex align-items-center">
+                    <input
+                      type="radio"
+                      name="pagamentos"
+                      id="credito"
+                      value="Cartão de Crédito/Débito"
+                    />
+                    <label className="ms-2" htmlFor="credito">
+                      Visa, MasterCard, Maestro, Americanas, Elo
+                    </label>
+                  </div>
                 </div>
-                <div className="cart">
-                  <h6>Débito</h6>
-                  <p>Visa, MasterCard, Elo</p>
-                </div>
-                <div className="cart">
+                <div className="cart  mb-2 mt-1">
                   <h6>Vale Refeição</h6>
-                  <p>Sodexo, Ticket</p>
+                  <div className="d-flex align-items-center">
+                    <input
+                      type="radio"
+                      name="pagamentos"
+                      id="refeicao"
+                      value="Vale refeição"
+                    />
+                    <label className="ms-2" htmlFor="refeicao">
+                      Sodexo, Ticket
+                    </label>
+                  </div>
                 </div>
-                <div className="cart">
+                <div className="cart  mb-2 mt-1">
                   <h6>Dinheiro</h6>
+                  <div className="d-flex align-items-center">
+                    <input
+                      type="radio"
+                      name="pagamentos"
+                      id="dinheiro"
+                      value="Dinheiro"
+                      onChange={() => {
+                        var troco = document.getElementById("troco");
+                        troco.classList.remove("d-none");
+                        troco.classList.add("d-flex");
+                      }}
+                    />
+                    <label className="ms-2" htmlFor="dinheiro">
+                      Dinheiro
+                    </label>
+                  </div>
+                  <div className="d-none align-items-center" id="troco">
+                    <label className="me-2">Troco necessário?</label>
+                    <input
+                      type="radio"
+                      name="troco"
+                      id="trocoSim"
+                      value="sim"
+                      onClick={() => {
+                        var seTroco = document.getElementById("seTroco");
+                        seTroco.classList.remove("d-none");
+                        seTroco.classList.add("d-flex");
+                      }}
+                    />
+                    <label htmlFor="trocoSim" className="ms-1">
+                      Sim
+                    </label>
+                    <input
+                      type="radio"
+                      name="troco"
+                      id="trocoNao"
+                      value="nao"
+                      className="ms-2"
+                    />
+                    <label htmlFor="trocoNao" className="ms-1">
+                      Não
+                    </label>
+                  </div>
+                  <div className="seTroco d-none" id="seTroco">
+                    <input type="number" name="valorTroco" id="valorTroco" />
+                  </div>
                 </div>
-                <div className="cart">
+                <div className="cart mb-2 mt-1">
                   <h6>QR Code</h6>
+                  <div className="d-flex align-items-center">
+                    <input
+                      type="radio"
+                      name="pagamentos"
+                      id="qrCode"
+                      value="QR Code"
+                    />
+                    <label className="ms-2" htmlFor="qrCode">
+                      QR Code
+                    </label>
+                  </div>
                 </div>
               </div>
             </div>
