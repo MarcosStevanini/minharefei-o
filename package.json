@@ -1,7 +1,7 @@
 {
   "name": "refeicao",
   "private": true,
-  "homepage": "https://marcosstevanini.github.io/minharefeicao",
+  "homepage": "./",
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
