@@ -1,6 +1,7 @@
 {
   "name": "refeicao",
   "private": true,
+  "homepage": "minharefeicao/",
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
