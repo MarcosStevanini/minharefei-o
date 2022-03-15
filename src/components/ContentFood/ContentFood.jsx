@@ -1,49 +1,101 @@
+import React, { useState } from "react";
 import "./ContentFood.scss";
 
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 export default function ContentFood() {
+  const [listProducts, setListProducts] = useState([]);
+  const [methodPay, setMethodPay] = useState();
+  const [exchanged, setExchanged] = useState();
+  const [amountExchanged, setAmountExchanged] = useState(0);
   const testeData = new Date();
 
-  function EnviarPedido() {
-    var checado = document.querySelectorAll("[type=checkbox]:checked");
-    var pagamentos = document.querySelectorAll("[name=pagamentos]:checked");
-    var troco = document.querySelectorAll("[name=troco]:checked");
-    var totalTroco = document.getElementById("valorTroco").value;
-
-    var pagValues = [];
-    var values = [];
-    var trocoValue = [];
-
-    for (var k = 0; k < troco.length; k++) {
-      trocoValue.push(troco[k].value);
-    }
-
-    for (var i = 0; i < checado.length; i++) {
-      values.push(checado[i].value);
-    }
-    for (var j = 0; j < pagamentos.length; j++) {
-      pagValues.push(pagamentos[j].value);
-    }
-
-    if (values.length > 2 && pagValues.length > 0) {
-      // console.log(values);
-      // console.log(pagValues);
-      // console.log(fim);
-      var fim =
-        trocoValue == "sim"
-          ? " Com troco para: " + totalTroco + " reais"
-          : trocoValue == "nao"
-          ? " Sem troco"
-          : ".";
-
-      window.location.href =
-        `https://wa.me/+5522988545081?text=Olá, eu gostaria de pedir uma refeição com: *${values}*. Com a forma de pagamento em: ${pagValues}` +
-        `${fim}`;
-    } else if (values.length <= 2) {
-      alert("Você precisa selecionar pelo menos 2 tipos de alimentos");
+  const onSubmit = () => {
+    if (listProducts.length < 3) {
+      return toast.error("Selecione pelo menos 3 alimentos");
+    } else if (!methodPay) {
+      return toast.error("Selecione um metodo de pagamento");
     } else {
-      alert("Você precisa selecionar a forma de pagamento");
+      toast.success("Enviando pedido");
+      window.location.href = `https://wa.me/+5522988545081?text=Olá, eu gostaria de pedir uma refeição com: *${listProducts.join(
+        ", "
+      )}*. ${!!methodPay && `Com a forma de pagamento em: ${methodPay}`} ${
+        !!exchanged
+          ? "com troco para: R$ " + Number(amountExchanged).toFixed(2)
+          : ""
+      }`;
     }
-  }
+  };
+
+  const productsFood = {
+    allOption: [
+      {
+        name: "arroz",
+        value: "Arroz",
+      },
+      {
+        name: "feijao",
+        value: "Feijão",
+      },
+      {
+        name: "batata",
+        value: "Batata",
+      },
+    ],
+
+    saladOption: [
+      {
+        name: "alface",
+        value: "Alface",
+      },
+      {
+        name: "tomate",
+        value: "Tomate",
+      },
+    ],
+    pasOption: [
+      {
+        name: "macarrao",
+        value: "Macarrão",
+      },
+      {
+        name: "lazanha",
+        value: "Lazanha",
+      },
+      {
+        name: "empadao",
+        value: "Empadão",
+      },
+    ],
+    beefOption: [
+      {
+        name: "boi",
+        value: "Carne de boi",
+      },
+      {
+        name: "porco",
+        value: "Carne de porco",
+      },
+      {
+        name: "frango",
+        value: "Carne de frango",
+      },
+    ],
+  };
+
+  const handleProducts = (e) => {
+    setListProducts((prevState) => {
+      const findItem = prevState.find((value) => value === e.target.value);
+      if (!!findItem) return prevState.filter((value) => value !== findItem);
+
+      return [...prevState, e.target.value];
+    });
+  };
+
+  const handlePay = (e) => {
+    setMethodPay(e.target.value);
+  };
 
   return (
     <section className="ContentFood mt-5">
@@ -65,128 +117,87 @@ export default function ContentFood() {
                     <h5>Opções gerais</h5>
                   </div>
 
-                  <div className="products">
-                    <input
-                      type="checkbox"
-                      name="arroz"
-                      id="arroz"
-                      value=" Arroz"
-                    />
-                    <label htmlFor="arroz">Arroz</label>
-                  </div>
-                  <div className="products">
-                    <input
-                      type="checkbox"
-                      name="feijao"
-                      id="feijao"
-                      value=" Feijão"
-                    />
-                    <label htmlFor="feijao">Feijão</label>
-                  </div>
-                  <div className="products">
-                    <input
-                      type="checkbox"
-                      name="batata"
-                      id="batata"
-                      value=" Batata Frita"
-                    />
-                    <label htmlFor="batata">Batata Frita</label>
-                  </div>
+                  {productsFood.allOption.map((item) => {
+                    return (
+                      <div className="products" key={item.name}>
+                        <input
+                          type="checkbox"
+                          name={item.name}
+                          value={item.value}
+                          // checked={listProducts.find(
+                          //   (value) => value === item.value
+                          // )}
+                          onChange={handleProducts}
+                        />
+                        <label htmlFor={item.name}>{item.value}</label>
+                      </div>
+                    );
+                  })}
                 </div>
 
                 <div className="col-lg-4">
                   <div className="infoTitle mt-3">
                     <h5>Opções de salada</h5>
                   </div>
-                  <div className="products">
-                    <input
-                      type="checkbox"
-                      name="alface"
-                      id="alface"
-                      value=" Alface"
-                    />
-                    <label htmlFor="alface">Alface</label>
-                  </div>
-                  <div className="products">
-                    <input
-                      type="checkbox"
-                      name="tomate"
-                      id="tomate"
-                      value=" Tomate"
-                    />
-                    <label htmlFor="tomate">Tomate</label>
-                  </div>
+
+                  {productsFood.saladOption.map((item) => {
+                    return (
+                      <div className="products" key={item.name}>
+                        <input
+                          type="checkbox"
+                          name={item.name}
+                          value={item.value}
+                          onChange={handleProducts}
+                        />
+                        <label htmlFor={item.name}>{item.value}</label>
+                      </div>
+                    );
+                  })}
                 </div>
 
                 <div className="col-lg-4">
                   <div className="infoTitle mt-3">
                     <h5>Opções de massas</h5>
                   </div>
-                  <div className="products">
-                    <input
-                      type="checkbox"
-                      name="lazanha"
-                      id="lazanha"
-                      value=" Lazanha"
-                    />
-                    <label htmlFor="lazanha">Lazanha</label>
-                  </div>
-                  <div className="products">
-                    <input
-                      type="checkbox"
-                      name="empadao"
-                      id="empadao"
-                      value=" Empadão"
-                    />
-                    <label htmlFor="empadao">Empadão</label>
-                  </div>
+
+                  {productsFood.pasOption.map((item) => {
+                    return (
+                      <div className="products" key={item.name}>
+                        <input
+                          type="checkbox"
+                          name={item.name}
+                          value={item.value}
+                          onChange={handleProducts}
+                        />
+                        <label htmlFor={item.name}>{item.value}</label>
+                      </div>
+                    );
+                  })}
                 </div>
 
                 <div className="col-lg-4">
                   <div className="infoTitle mt-3">
                     <h5>Opções de carnes</h5>
                   </div>
-                  <div className="products">
-                    <input
-                      type="checkbox"
-                      name="boi"
-                      id="boi"
-                      value=" Bife de boi"
-                    />
-                    <label htmlFor="boi" id="boiLabel">
-                      Bife de boi
-                    </label>
-                  </div>
-                  <div className="products">
-                    <input
-                      type="checkbox"
-                      name="frango"
-                      id="frango"
-                      value=" Frango frito"
-                    />
-                    <label htmlFor="frango">Frango frito</label>
-                  </div>
-                  <div className="products">
-                    <input
-                      type="checkbox"
-                      name="frangoGrelhado"
-                      id="frangoGrelhado"
-                      value=" Frango grelhado"
-                    />
-                    <label htmlFor="frangoGrelhado" id="frangoLabel">
-                      Frango grelhado
-                    </label>
-                  </div>
+
+                  {productsFood.beefOption.map((item) => {
+                    return (
+                      <div className="products" key={item.name}>
+                        <input
+                          type="checkbox"
+                          name={item.name}
+                          value={item.value}
+                          onChange={handleProducts}
+                        />
+                        <label htmlFor={item.name}>{item.value}</label>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
               <hr />
               <div className="buttonContent">
-                <button
-                  type="submit"
-                  id="btn"
-                  name="btn"
-                  onClick={EnviarPedido}
-                >
+                <button type="submit" name="btn" onClick={onSubmit}>
                   Enviar pedido
                 </button>
               </div>
@@ -209,8 +220,8 @@ export default function ContentFood() {
                     <input
                       type="radio"
                       name="pagamentos"
-                      id="credito"
                       value="Cartão de Crédito/Débito"
+                      onChange={handlePay}
                     />
                     <label className="ms-2" htmlFor="credito">
                       Visa, MasterCard, Maestro, Americanas, Elo
@@ -223,8 +234,8 @@ export default function ContentFood() {
                     <input
                       type="radio"
                       name="pagamentos"
-                      id="refeicao"
                       value="Vale refeição"
+                      onChange={handlePay}
                     />
                     <label className="ms-2" htmlFor="refeicao">
                       Sodexo, Ticket
@@ -237,65 +248,53 @@ export default function ContentFood() {
                     <input
                       type="radio"
                       name="pagamentos"
-                      id="dinheiro"
                       value="Dinheiro"
-                      onChange={() => {
-                        var troco = document.getElementById("troco");
-                        troco.classList.remove("d-none");
-                        troco.classList.add("d-flex");
-                      }}
+                      onChange={handlePay}
                     />
                     <label className="ms-2" htmlFor="dinheiro">
                       Dinheiro
                     </label>
                   </div>
-                  <div className="d-none align-items-center" id="troco">
-                    <label className="me-2">Troco necessário?</label>
+                  <label className="me-2">Troco necessário?</label>
+                  <input
+                    type="radio"
+                    name="troco"
+                    value="sim"
+                    onChange={() => setExchanged(true)}
+                  />
+                  <label htmlFor="trocoSim" className="ms-1">
+                    Sim
+                  </label>
+                  <input
+                    type="radio"
+                    name="troco"
+                    value="nao"
+                    onChange={() => setExchanged(false)}
+                    className="ms-2"
+                  />
+                  <label htmlFor="trocoNao" className="ms-1">
+                    Não
+                  </label>
+
+                  {!!exchanged && (
                     <input
-                      type="radio"
-                      name="troco"
-                      id="trocoSim"
-                      value="sim"
-                      onClick={() => {
-                        var seTroco = document.getElementById("seTroco");
-                        seTroco.classList.remove("d-none");
-                        seTroco.classList.add("d-flex");
-                      }}
+                      type="number"
+                      placeholder={"Digite o valor do troco:"}
+                      onChange={(e) => setAmountExchanged(e.target.value)}
                     />
-                    <label htmlFor="trocoSim" className="ms-1">
-                      Sim
-                    </label>
-                    <input
-                      type="radio"
-                      name="troco"
-                      id="trocoNao"
-                      value="nao"
-                      className="ms-2"
-                    />
-                    <label htmlFor="trocoNao" className="ms-1">
-                      Não
-                    </label>
-                  </div>
-                  <div className="seTroco d-none" id="seTroco">
-                    <input type="number" name="valorTroco" id="valorTroco" />
-                  </div>
-                </div>
-                <div className="cart mb-2 mt-1">
-                  <h6>QR Code</h6>
-                  <div className="d-flex align-items-center">
-                    <input
-                      type="radio"
-                      name="pagamentos"
-                      id="qrCode"
-                      value="QR Code"
-                    />
-                    <label className="ms-2" htmlFor="qrCode">
-                      QR Code
-                    </label>
-                  </div>
+                  )}
                 </div>
               </div>
             </div>
+            {/* <div className="cart mb-2 mt-1">
+              <h6>QR Code</h6>
+              <div className="d-flex align-items-center">
+                <input type="radio" name="pagamentos" value="QR Code" />
+                <label className="ms-2" htmlFor="qrCode">
+                  QR Code
+                </label>
+              </div>
+            </div> */}
           </div>
         </div>
       </div>
